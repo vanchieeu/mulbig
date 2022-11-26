@@ -1,63 +1,54 @@
 #include <iostream>
-#include <string>
+#include <string.h>
 using namespace std;
 
-void swap(string *a, string *b) {
-    string temp = *a;
-    *a = *b;
-    *b = temp;
-}
-
 int main() {
-    string a, b;
+    char a[1001], b[1001];
 
     cin >> a >> b;
+    if (strcmp(a, "0") == 0 || strcmp(b, "0") == 0) {
+        cout << 0;
+        return 0;
+    }
 
-    if (a.length() > b.length())
-        swap(a, b);
+    char **mul = new char*[strlen(a)];
+    for (int i = 0; i < strlen(a); i++)
+        mul[i] = new char[strlen(a)+strlen(b)];
 
-    string **mul = new string*[a.length()];
-    for (int i = 0; i < a.length(); i++)
-        mul[i] = new string[a.length()+b.length()];
-
-    for (int i = 0; i < a.length(); i++) 
-        for (int j = 0; j < a.length()+b.length(); j++)
+    for (int i = 0; i < strlen(a); i++)
+        for (int j = 0; j < strlen(a)+strlen(b); j++)
             mul[i][j] = '0';
 
     int res = 0;
-    for (int i = a.length()-1; i >= 0; i--) {
+    for (int i = strlen(a)-1; i >= 0; i--) {
         int j;
-        for (j = b.length()-1; j >= 0; j--) {
+        for (j = strlen(b)-1; j >= 0; j--) {
             int x = (int)(a[i]-48) * (int)(b[j]-48) + res;
             res = x/10;
             x %= 10;
             mul[i][j+i+1] = (char)(x + 48);
         }
         mul[i][j+1+i] = (char)(res+48);
+        res = 0;
     }
 
-    char result[a.length()+b.length()+1];
-    for (int i = 0; i < a.length()+b.length(); i++)
-        result[i] = '0';
-    res = 0;
-    for (int i = a.length()+b.length()-1; i >= 0; i++) {
+    char *result = new char[strlen(a)+strlen(b)];
+    for (int i = strlen(a)+strlen(b)-1; i >= 0; i--) {
         int x = 0;
-        for (int j = 0; j < a.length(); j++) {
-            string m = mul[i][j];
-            char s = m[0];
-            x += (int)(s - 48) + res;
+        for (int j = 0; j < strlen(a); j++) {
+            x += (int)(mul[j][i] - 48);
         }
+        x += res;
         res = x/10;
         x %= 10;
-        result[i] = char(x+48);
-    }
-        
-    for (int i = 0; i < a.length(); i++) {
-        for (int j = 0; j < a.length()+b.length(); j++)
-            cout << mul[i][j] << " ";
-        cout << endl;
+        result[i] = (char)(x+48);
     }
 
-    cout << endl << result;
+    if (result[0] == '0') {
+        for (int i = 1; i < strlen(a)+strlen(b); i++)
+            cout << result[i];
+            return 0;
+    }
+    cout << result;
     return 0;
 }
